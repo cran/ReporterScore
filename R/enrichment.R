@@ -64,7 +64,7 @@ KO_enrich_internal <- function(ko_stat, padj_threshold = 0.05,
         ko_stat <- reporter_res$ko_stat
         modulelist <- reporter_res$modulelist
         if (is.character(modulelist)) {
-            GOlist=load_GOlist()
+            GOlist <- load_GOlist()
             modulelist <- eval(parse(text = modulelist))
         }
         type <- attributes(reporter_res$reporter_s)$type
@@ -508,7 +508,7 @@ KO_gsa <- function(reporter_res, method = "Two class unpaired", p.adjust.method 
         kodf <- reporter_res$kodf
         modulelist <- reporter_res$modulelist
         if (is.character(modulelist)) {
-            GOlist=load_GOlist()
+            GOlist <- load_GOlist()
             modulelist <- eval(parse(text = modulelist))
         }
         group <- reporter_res$group

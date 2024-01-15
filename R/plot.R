@@ -209,16 +209,16 @@ get_facet_anno <- function(reporter_res, facet_anno, mode = c("bar", "circle")[1
                 assign("facet_level", FALSE, envir)
                 return(NULL)
             } else if (attributes(reporter_res)$type == "pathway") {
-                Pathway_htable=load_Pathway_htable()
+                Pathway_htable <- load_Pathway_htable()
                 tmpdf <- Pathway_htable[, c("level1_name", "Pathway_id")]
             } else if (attributes(reporter_res)$type == "module") {
-                Module_htable=load_Module_htable()
+                Module_htable <- load_Module_htable()
                 tmpdf <- Module_htable[c("module2_name", "Module_id")]
             } else if (attributes(reporter_res)$type == "ALL") {
                 tmpdf <- reporter_res[c("ONT", "ID")]
             } else {
                 # other organisms
-                Pathway_htable=load_Pathway_htable()
+                Pathway_htable <- load_Pathway_htable()
                 tmpdf <- Pathway_htable[, c("level1_name", "Pathway_id")]
                 tmpdf$Pathway_id <- gsub("map", attributes(reporter_res)$type, tmpdf$Pathway_id)
             }
@@ -234,18 +234,18 @@ get_facet_anno <- function(reporter_res, facet_anno, mode = c("bar", "circle")[1
             if (is.null(attributes(reporter_res)$type)) {
                 stop("No attributes(reporter_res)$type found.")
             } else if (attributes(reporter_res)$type == "pathway") {
-                Pathway_htable=load_Pathway_htable()
+                Pathway_htable <- load_Pathway_htable()
                 tmpdf <- Pathway_htable
                 node_name <- "Pathway"
             } else if (attributes(reporter_res)$type == "module") {
-                Module_htable=load_Module_htable()
+                Module_htable <- load_Module_htable()
                 tmpdf <- Module_htable
                 node_name <- "Module"
             } else if (attributes(reporter_res)$type == "ALL") {
                 tmpdf <- reporter_res[c("ONT", "ID", "Description")]
                 node_name <- "GO term"
             } else {
-                Pathway_htable=load_Pathway_htable()
+                Pathway_htable <- load_Pathway_htable()
                 tmpdf <- Pathway_htable
                 tmpdf$Pathway_id <- gsub("map", attributes(reporter_res)$type, tmpdf$Pathway_id)
                 node_name <- "Pathway"
@@ -482,7 +482,7 @@ plot_features_in_pathway <- function(ko_stat, map_id = "map00780",
         metadata <- reporter_res$metadata
         modulelist <- reporter_res$modulelist
         if (is.character(modulelist)) {
-            GOlist=load_GOlist()
+            GOlist <- load_GOlist()
             modulelist <- eval(parse(text = modulelist))
         }
         flag <- TRUE
@@ -627,7 +627,7 @@ plot_features_box <- function(kodf, group = NULL, metadata = NULL,
         metadata <- reporter_res$metadata
         modulelist <- reporter_res$modulelist
         if (is.character(modulelist)) {
-            GOlist=load_GOlist()
+            GOlist <- load_GOlist()
             modulelist <- eval(parse(text = modulelist))
         }
         flag <- TRUE
@@ -657,9 +657,9 @@ plot_features_box <- function(kodf, group = NULL, metadata = NULL,
     plotdat <- tkodf[, cols, drop = FALSE]
 
     if (KO_description) {
-        ko_desc=load_KO_desc()
+        ko_desc <- load_KO_desc()
         if (grepl("C\\d{5}", colnames(plotdat)[1])) {
-            Compound_htable=load_Compound_htable()
+            Compound_htable <- load_Compound_htable()
             ko_desc <- Compound_htable[, c("Compound_id", "Compound_name")]
             colnames(ko_desc) <- c("KO_id", "KO_name")
         }
@@ -730,7 +730,7 @@ plot_features_heatmap <- function(kodf, group = NULL, metadata = NULL,
         metadata <- reporter_res$metadata
         modulelist <- reporter_res$modulelist
         if (is.character(modulelist)) {
-            GOlist=load_GOlist()
+            GOlist <- load_GOlist()
             modulelist <- eval(parse(text = modulelist))
         }
         flag <- TRUE
@@ -752,9 +752,9 @@ plot_features_heatmap <- function(kodf, group = NULL, metadata = NULL,
     if (!is.null(columns)) plotdat <- plotdat[, columns]
 
     if (KO_description) {
-        ko_desc=load_KO_desc()
+        ko_desc <- load_KO_desc()
         if (grepl("C\\d{5}", rownames(plotdat)[1])) {
-            Compound_htable=load_Compound_htable()
+            Compound_htable <- load_Compound_htable()
             ko_desc <- Compound_htable[, c("Compound_id", "Compound_name")]
             colnames(ko_desc) <- c("KO_id", "KO_name")
         }
@@ -979,8 +979,8 @@ plot_htable <- function(type = "ko", select = NULL, htable = NULL) {
 #' output_dir <- tempdir()
 #' data("reporter_score_res")
 #' plot_KEGG_map(reporter_score_res$ko_stat,
-#'     map_id = "map00780",type = "pathway",
-#'     feature = "ko", color_var = "Z_score", save_dir=output_dir
+#'     map_id = "map00780", type = "pathway",
+#'     feature = "ko", color_var = "Z_score", save_dir = output_dir
 #' )
 #' }
 plot_KEGG_map <- function(ko_stat, map_id = "map00780", modulelist = NULL, type = "pathway", feature = "ko",
@@ -990,7 +990,7 @@ plot_KEGG_map <- function(ko_stat, map_id = "map00780", modulelist = NULL, type 
         ko_stat <- reporter_res$ko_stat
         modulelist <- reporter_res$modulelist
         if (is.character(modulelist)) {
-            GOlist=load_GOlist()
+            GOlist <- load_GOlist()
             modulelist <- eval(parse(text = modulelist))
         }
         flag <- TRUE
@@ -1037,3 +1037,112 @@ plot_KEGG_map <- function(ko_stat, map_id = "map00780", modulelist = NULL, type 
     message("result have been saved in ", file.path(save_dir, filename))
     # pcutils::read.file(file.path(save_dir, filename))
 }
+
+#' Plot features network
+#'
+#' @param ko_stat ko_stat result from \code{\link{pvalue2zs}} or result of `get_reporter_score`
+#' @param map_id the pathway or module id
+#' @param kos_color default, c("Depleted"="seagreen","Enriched"="orange","None"="grey","Significant"="red2")
+#' @param near_pathway show the near_pathway if any features exist.
+#' @param modulelist NULL or customized modulelist dataframe, must contain "id","K_num","KOs","Description" columns. Take the `KOlist` as example, use \code{\link{custom_modulelist}}.
+#' @param ... additional arguments for \code{\link[MetaNet]{c_net_plot}}
+#' @param pathway_label show pathway_label?
+#' @param kos_label show kos_label?
+#' @param mark_module mark the modules?
+#' @param mark_color mark colors, default, c("Depleted"="seagreen","Enriched"="orange","None"="grey","Significant"="red2")
+#' @param return_net return the network
+#'
+#' @aliases plot_KOs_network
+#' @export
+#' @return network plot
+#' @examples
+#' data("reporter_score_res")
+#' plot_features_network(reporter_score_res, map_id = "map05230")
+#' plot_features_network(reporter_score_res, map_id = "map00780", near_pathway = TRUE)
+plot_features_network <- function(ko_stat, map_id = "map00780",
+                                  near_pathway = FALSE,
+                                  modulelist = NULL,
+                                  kos_color = c("Depleted" = "seagreen", "Enriched" = "orange", "None" = "grey", "Significant" = "red2", "Pathway" = "#80b1d3"),
+                                  pathway_label = TRUE, kos_label = TRUE,
+                                  mark_module = FALSE, mark_color = NULL,
+                                  return_net = FALSE,
+                                  ...) {
+    id <- KOs <- module <- ReporterScore <- NULL
+    pcutils::lib_ps("ggnewscale", "reshape2", "MetaNet", library = FALSE)
+
+    if (inherits(ko_stat, "reporter_score")) {
+        reporter_res <- ko_stat
+        ko_stat <- reporter_res$ko_stat[, c("KO_id", "Significantly")]
+        modulelist <- reporter_res$modulelist
+        if (is.character(modulelist)) {
+            GOlist <- load_GOlist()
+            modulelist <- eval(parse(text = modulelist))
+        }
+        reporter_s <- reporter_res$reporter_s
+    } else {
+        stop("Need reporter_score object")
+    }
+
+    if (is.null(modulelist)) {
+        KOlist <- load_KOlist()
+        if (grepl("map", map_id)) modulelist <- KOlist$pathway
+        if (grepl("M", map_id)) modulelist <- KOlist$module
+        if (grepl("GO:", map_id[1])) {
+            GOlist <- load_GOlist()
+            modulelist <- lapply(names(GOlist), function(i) cbind(GOlist[[i]], ONT = i)) %>% do.call(rbind, .)
+        }
+    }
+
+    id2ko <- modulelist %>%
+        dplyr::select(id, KOs) %>%
+        pcutils::explode(2)
+
+    select_ko <- get_KOs(map_id = map_id, modulelist = modulelist)
+
+    select_ko <- intersect(select_ko, ko_stat$KO_id)
+    if (length(select_ko) == 0) stop("No select KOs! check map_id or select_ko")
+
+    if (!near_pathway) {
+        id2ko <- dplyr::filter(id2ko, id %in% map_id)
+    }
+
+    id2ko <- dplyr::filter(id2ko, KOs %in% select_ko)
+    colnames(id2ko) <- c("Pathway", "KOs")
+
+    ko_net <- MetaNet::twocol_edgelist(id2ko)
+    ko_net <- MetaNet::c_net_set(ko_net, ko_stat, vertex_class = "Significantly")
+    igraph::graph.attributes(ko_net)$n_type <- "ko_net"
+    igraph::vertex.attributes(ko_net)[["color"]] <- pcutils::tidai(igraph::vertex.attributes(ko_net)[["v_class"]], kos_color)
+    tmp_v <- MetaNet::get_v(ko_net)
+    if (!pathway_label) tmp_v$label <- ifelse(tmp_v$v_group == "Pathway", NA, tmp_v$label)
+    if (!kos_label) tmp_v$label <- ifelse(tmp_v$v_group == "KOs", NA, tmp_v$label)
+    if (mark_module) {
+        ko_net_m <- MetaNet::modu_dect(ko_net, method = "cluster_walktrap")
+        if (return_net) {
+            return(ko_net_m)
+        }
+        tmp_v2 <- MetaNet::get_v(ko_net_m)
+
+        tmp_v2 <- dplyr::left_join(tmp_v2, reporter_s, by = c("name" = "ID"))
+        modules <- dplyr::group_by(tmp_v2, module) %>%
+            dplyr::summarise(RS = mean(ReporterScore, na.rm = TRUE)) %>%
+            as.data.frame()
+        if (is.null(mark_color)) mark_color <- kos_color
+        if (attributes(reporter_res$ko_stat)$mode == "directed") {
+            modules$color <- ifelse(modules$RS > 1.64, kos_color["Enriched"],
+                ifelse(modules$RS < (-1.64), kos_color["Depleted"], kos_color["None"])
+            )
+        } else {
+            modules$color <- ifelse(modules$RS > 1.64, kos_color["Significant"], kos_color["None"])
+        }
+        modules_col <- setNames(modules$color, modules$module)
+        plot(ko_net_m, vertex.color = kos_color, vertex.label = tmp_v$label, mark_module = TRUE, mark_color = modules_col, ...)
+    } else {
+        if (return_net) {
+            return(ko_net)
+        }
+        plot(ko_net, vertex.color = kos_color, vertex.label = tmp_v$label, ...)
+    }
+}
+#' @export plot_KOs_network
+assign("plot_KOs_network", plot_features_network, envir = asNamespace(packageName()))
