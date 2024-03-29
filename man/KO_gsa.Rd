@@ -2,14 +2,15 @@
 % Please edit documentation in R/enrichment.R
 \name{KO_gsa}
 \alias{KO_gsa}
-\title{Perform KO gene set analysis}
+\title{Perform gene set analysis}
 \usage{
 KO_gsa(
   reporter_res,
   method = "Two class unpaired",
   p.adjust.method = "BH",
   verbose = TRUE,
-  perm = 1000
+  perm = 1000,
+  ...
 )
 }
 \arguments{
@@ -22,18 +23,34 @@ KO_gsa(
 \item{verbose}{TRUE}
 
 \item{perm}{1000}
+
+\item{...}{additional parameters to \code{\link[GSA]{GSA}}}
 }
 \value{
 enrich_res object
 }
 \description{
-Perform KO gene set analysis
+Perform gene set analysis
 }
 \examples{
 \donttest{
 ## use `GSA` from the `GSA` package.
-data("reporter_score_res")
-gsa_res <- KO_gsa(reporter_score_res, p.adjust.method = "none", perm = 200)
-plot(gsa_res)
+if (requireNamespace("GSA")) {
+  data("reporter_score_res")
+  gsa_res <- KO_gsa(reporter_score_res, p.adjust.method = "none", perm = 200)
+  plot(gsa_res)
 }
 }
+}
+\seealso{
+Other common_enrich: 
+\code{\link{KO_enrich}()},
+\code{\link{KO_fisher}()},
+\code{\link{KO_gsea}()},
+\code{\link{KO_gsva}()},
+\code{\link{KO_padog}()},
+\code{\link{KO_safe}()},
+\code{\link{KO_sea}()},
+\code{\link{plot_enrich_res}()}
+}
+\concept{common_enrich}

@@ -18,7 +18,7 @@ NULL
 
 
 deprecated <- function(old, new) {
-    assign(old, new, envir = asNamespace(packageName()))
+  assign(old, new, envir = asNamespace(packageName()))
 }
 
 #' @export GRSA
@@ -43,3 +43,5 @@ deprecated("plot_report_bar", plot_report)
 deprecated("download_org_pathway", update_org_pathway)
 #' @export get_org_pathway
 deprecated("get_org_pathway", update_org_pathway)
+#' @export plot_KOs_network
+deprecated("plot_KOs_network", plot_features_network)

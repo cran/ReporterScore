@@ -8,11 +8,23 @@
 four columns in each data.frame.
 \describe{
 \item{id}{"map0010" or "M00001"}
-\item{K_num}{contians how many Compounds in this pathway or module}
-\item{KOs}{Compounds name}
-\item{Description}{the description of this pathway or module}
+\item{K_num}{contians how many Genes in this GO term}
+\item{KOs}{Genes name}
+\item{Description}{the description of this GO term}
 }
 }
 \description{
 an list contains three data.frame named BP, CC, MF.
 }
+\seealso{
+Other data: 
+\code{\link{CPDlist}},
+\code{\link{Compound_htable}},
+\code{\link{KO_htable}},
+\code{\link{KOlist}},
+\code{\link{Module_htable}},
+\code{\link{Pathway_htable}},
+\code{\link{hsa_kegg_pathway}},
+\code{\link{mmu_kegg_pathway}}
+}
+\concept{data}
