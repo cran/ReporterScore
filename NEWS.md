@@ -1,8 +1,27 @@
+# ReporterScore v0.1.5 Notes
+
+## Added
+
+- added citation information <2024-06-03, Mon>
+
+# ReporterScore v0.1.4 Notes
+
+## Fixed
+
+- fixed `up_level_KO` as level3_name would be duplicated <2024-04-10, Wed>
+- fixed `load_CPDlist()` as no return <2024-04-08, Mon>
+- fixed `get_modulelist()` as the third argument is `gene` <2024-04-07, Sun>
+
+## Added
+
+- added `combine_rs_res()` for combining the results of 'step by step GRSA' to `reporterscore` object <2024-04-08, Mon>
+- method can be 'none' in `ko.test()`, and return a NA pvalue <2024-04-08, Mon>
+
 # ReporterScore v0.1.3 Notes
 
 ## Added
 
-- add the `KO_gsva`, `KO_sea`, `KO_safe` and `KO_padog`. <2024-01-19, Fri>
+- add the `KO_gsva()`, `KO_sea()`, `KO_safe()` and `KO_padog()`. <2024-01-19, Fri>
 
 # ReporterScore v0.1.2 Notes
 
