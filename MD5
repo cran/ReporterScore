@@ -1,8 +1,8 @@
-097b2d994214070a724939e7f842e5c5 *DESCRIPTION
+f2e36894995e4d1e621221095fa491e6 *DESCRIPTION
 080cc4e7283531cb3a293bc6d25c0912 *NAMESPACE
-5ec16e0af1366145ce1308d52b61d6da *NEWS.md
+13d39f30e5d3caf8649fe5dc01c3319d *NEWS.md
 154d0ea0f1ecb0ff1b83df81c2ff259b *R/ReporterScore-package.R
-a22ac9b791ab574611b0194aaf643f66 *R/calculation.R
+7efc16b8e1f0e67418303223023bc047 *R/calculation.R
 96b9e774a102db987d5557cd63ea98fa *R/check_files.R
 ad85dc448df075710148adab38b3fe84 *R/data.R
 92a8429af3db8ec09b7237e0f3f62344 *R/enrichment.R
@@ -25,7 +25,7 @@ df5afdb9849e088a2ec0789c8a958017 *data/genedf.rda
 9dafcdd8a106024421621265db1a8092 *inst/CITATION
 a4e4f379edbffa69d76ecdb92b081a14 *inst/doc/ReporterScore.R
 e3cb3ce983b06da5e0795cc907fe8626 *inst/doc/ReporterScore.Rmd
-1b92837479cf034543c7ef9765317438 *inst/doc/ReporterScore.html
+33fb02c86694221ba0c1b1730532ee03 *inst/doc/ReporterScore.html
 76633f12a726d2a05afcf8d7e1fc3a5a *man/CPDlist.Rd
 17e037551ff7465da3e97a34dccecb97 *man/Compound_htable.Rd
 518a43e3208799417eecd5fe63bcb5d8 *man/GOlist.Rd
