@@ -8,6 +8,37 @@ reporter_theme <- {
     )
 }
 
+#' Export report score result tables
+#'
+#' @param reporter_res a reporter_score object or rs_by_cm object
+#' @param dir_name the directory to save the report tables
+#' @param overwrite overwrite the existed files or not, default is FALSE.
+#'
+#' @return No return value
+#' @export
+#'
+export_report_table <- function(reporter_res, dir_name, overwrite = FALSE) {
+  if (!dir.exists(dir_name)) {
+    dir.create(dir_name)
+  }
+  if (!overwrite) {
+    if (file.exists(file.path(dir_name, "ko_stat.csv"))) {
+      stop("The directory already contains ko_stat.csv or reporter_s.csv, please set overwrite = TRUE to overwrite them.")
+    }
+  }
+  if (inherits(reporter_res, "reporter_score")) {
+    utils::write.csv(reporter_res$ko_stat, file = file.path(dir_name, "ko_stat.csv"), row.names = F)
+    utils::write.csv(reporter_res$reporter_s, file = file.path(dir_name, "reporter_s.csv"), row.names = F)
+  }
+  if (inherits(reporter_res, "rs_by_cm")) {
+    ncluster <- sum(grepl("Cluster", names(reporter_res)))
+    for (i in seq_len(ncluster)) {
+      utils::write.csv(reporter_res[[paste0("Cluster", i)]]$ko_stat, file = file.path(dir_name, paste0("ko_stat_Cluster_", i, ".csv")), row.names = F)
+      utils::write.csv(reporter_res[[paste0("Cluster", i)]]$reporter_s, file = file.path(dir_name, paste0("reporter_s_Cluster_", i, ".csv")), row.names = F)
+    }
+  }
+}
+
 #' Plot the reporter_res
 #'
 #' @param reporter_res result of `get_reporter_score` or `reporter_score`
@@ -89,7 +120,7 @@ plot_report <- function(reporter_res, rs_threshold = 1.64, mode = 1, y_text_size
         levels = dplyr::arrange(reporter_res2, ReporterScore) %>%
           dplyr::pull(Description) %>% unique()
       )
-      p <- ggplot(reporter_res2, Description, size = Exist_K_num, fill = Exist_K_num)
+      p <- ggplot(reporter_res2, aes(ReporterScore, Description, size = Exist_K_num, fill = Exist_K_num))
     }
     p <- p +
       geom_point(shape = 21, position = "dodge") +
@@ -172,6 +203,9 @@ filter_report <- function(reporter_res, rs_threshold) {
   vs_group <- attributes(reporter_res)$vs_group
 
   rs_threshold <- sort(rs_threshold)
+  if (rs_threshold[1] > (-1.64) | rs_threshold[2] < 1.64) {
+    warning("The reporter score threshold is less than 1.64, which means the pathways may not be significantly enriched, please adjust the threshold!")
+  }
 
   if ((attributes(reporter_res)$mode == "directed") & is.null(attributes(reporter_res)$pattern)) {
     reporter_res2 <- reporter_res[(reporter_res$ReporterScore >= rs_threshold[2]) | (reporter_res$ReporterScore <= rs_threshold[1]), ]
@@ -1071,6 +1105,9 @@ plot_KEGG_map <- function(ko_stat, map_id = "map00780", modulelist = NULL, type 
 #' @param mark_module mark the modules?
 #' @param mark_color mark colors, default, c("Depleted"="seagreen","Enriched"="orange","None"="grey","Significant"="red2")
 #' @param return_net return the network
+#' @param pathway_description show the pathway description?
+#' @param kos_description show the kos description?
+#' @param str_width str width
 #'
 #' @aliases plot_KOs_network
 #' @export
@@ -1085,7 +1122,8 @@ plot_features_network <- function(ko_stat, map_id = "map00780",
                                   near_pathway = FALSE,
                                   modulelist = NULL,
                                   kos_color = c("Depleted" = "seagreen", "Enriched" = "orange", "None" = "grey", "Significant" = "red2", "Pathway" = "#80b1d3"),
-                                  pathway_label = TRUE, kos_label = TRUE,
+                                  pathway_label = TRUE, kos_label = TRUE, pathway_description = FALSE, kos_description = FALSE,
+                                  str_width = 50,
                                   mark_module = FALSE, mark_color = NULL,
                                   return_net = FALSE,
                                   ...) {
@@ -1137,7 +1175,24 @@ plot_features_network <- function(ko_stat, map_id = "map00780",
   igraph::vertex.attributes(ko_net)[["color"]] <- pcutils::tidai(igraph::vertex.attributes(ko_net)[["v_class"]], kos_color)
   tmp_v <- MetaNet::get_v(ko_net)
   if (!pathway_label) tmp_v$label <- ifelse(tmp_v$v_group == "Pathway", NA, tmp_v$label)
+  if (pathway_description) {
+    tmp_v$label <- ifelse(tmp_v$v_group == "Pathway", setNames(modulelist$Description, modulelist$id)[tmp_v$name], tmp_v$label) %>% stringr::str_wrap(., width = str_width)
+  }
   if (!kos_label) tmp_v$label <- ifelse(tmp_v$v_group == "KOs", NA, tmp_v$label)
+  if (kos_label & kos_description) {
+    ko_desc <- load_KO_desc()
+    if (grepl("C\\d{5}", tmp_v[tmp_v$v_group == "KOs", "name"][1])) {
+      Compound_htable <- load_Compound_htable()
+      ko_desc <- Compound_htable[, c("Compound_id", "Compound_name")]
+      colnames(ko_desc) <- c("KO_id", "KO_name")
+    }
+    newname <- ko_desc[match(tmp_v[tmp_v$v_group == "KOs", "name"], ko_desc$KO_id), "KO_name", drop = TRUE]
+    if (all(is.na(newname))) warning("No description for KO found, are you sure rownames of kodf are KOs?")
+    tmp_v[tmp_v$v_group == "KOs", "label"] <- ifelse(is.na(newname), tmp_v[tmp_v$v_group == "KOs", "name"], newname) %>% stringr::str_wrap(., width = str_width)
+  }
+
+  igraph::vertex.attributes(ko_net) <- as.list(tmp_v)
+
   if (mark_module) {
     ko_net_m <- MetaNet::module_detect(ko_net, method = "cluster_walktrap")
     if (return_net) {
@@ -1158,11 +1213,11 @@ plot_features_network <- function(ko_stat, map_id = "map00780",
       modules$color <- ifelse(modules$RS > 1.64, kos_color["Significant"], kos_color["None"])
     }
     modules_col <- setNames(modules$color, modules$module)
-    plot(ko_net_m, vertex.color = kos_color, vertex.label = tmp_v$label, mark_module = TRUE, mark_color = modules_col, ...)
+    plot(ko_net_m, ..., vertex.color = kos_color, mark_module = TRUE, mark_color = modules_col)
   } else {
     if (return_net) {
       return(ko_net)
     }
-    plot(ko_net, vertex.color = kos_color, vertex.label = tmp_v$label, ...)
+    plot(ko_net, ..., vertex.color = kos_color)
   }
 }

@@ -285,8 +285,10 @@ ko.test <- function(kodf, group, metadata = NULL, method = "wilcox.test", patter
     }
 
     for (i in vs_group) {
-      tmpdf <- data.frame(average = apply(kodf[, which(group == i), drop = FALSE], 1, mean),
-                          sd = apply(kodf[, which(group == i), drop = FALSE], 1, sd))
+      tmpdf <- data.frame(
+        average = apply(kodf[, which(group == i), drop = FALSE], 1, mean),
+        sd = apply(kodf[, which(group == i), drop = FALSE], 1, sd)
+      )
       colnames(tmpdf) <- paste0(colnames(tmpdf), "_", i)
       res.dt <- cbind(res.dt, tmpdf)
     }
@@ -619,9 +621,10 @@ random_mean_sd <- function(vec, Knum, perm = 1000) {
 #' @return modulelist
 #' @noRd
 get_modulelist <- function(type, feature, gene = "symbol", verbose = TRUE, chr = FALSE) {
+  type <- match.arg(type, c("pathway", "module"))
+  feature <- match.arg(feature, c("ko", "compound", "gene"))
   if (type %in% c("pathway", "module")) {
     # reference pathway
-    type <- match.arg(type, c("pathway", "module"))
     if (feature == "ko") {
       KOlist <- load_KOlist(verbose = verbose)
       modulelist <- KOlist[[type]]
