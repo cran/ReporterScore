@@ -2,7 +2,7 @@ Package: ReporterScore
 Type: Package
 Title: Generalized Reporter Score-Based Enrichment Analysis for Omics
         Data
-Version: 0.1.7
+Version: 0.1.8
 Authors@R: 
     person("Chen", "Peng", email ="pengchen2001@zju.edu.cn", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-9449-7606"))
 Description: Inspired by the classic 'RSA', we developed the improved 'Generalized Reporter 
@@ -26,8 +26,8 @@ VignetteBuilder: knitr
 BugReports: https://github.com/Asa12138/ReporterScore/issues
 URL: https://github.com/Asa12138/ReporterScore
 NeedsCompilation: no
-Packaged: 2024-08-20 06:59:54 UTC; asa
+Packaged: 2024-08-25 01:04:36 UTC; asa
 Author: Chen Peng [aut, cre] (<https://orcid.org/0000-0002-9449-7606>)
 Maintainer: Chen Peng <pengchen2001@zju.edu.cn>
 Repository: CRAN
-Date/Publication: 2024-08-21 09:50:07 UTC
+Date/Publication: 2024-08-26 08:40:02 UTC
