@@ -616,12 +616,12 @@ random_mean_sd <- function(vec, Knum, perm = 1000) {
 #' @param feature "ko", "compound", "gene"
 #' @param gene one of "symbol","id"
 #' @param verbose logical
-#' @param chr keep chraacter or not
+#' @param chr keep character or not
 #'
 #' @return modulelist
 #' @noRd
 get_modulelist <- function(type, feature, gene = "symbol", verbose = TRUE, chr = FALSE) {
-  type <- match.arg(type, c("pathway", "module"))
+  # type <- match.arg(type, c("pathway", "module"))
   feature <- match.arg(feature, c("ko", "compound", "gene"))
   if (type %in% c("pathway", "module")) {
     # reference pathway
@@ -739,6 +739,18 @@ get_reporter_score <- function(
     # 以整个输入ko文件作为背景,抽取KOnum应该是exist_KO，而不是所有的KOnum，可以在iMeta文章看到
     mean_sd <- random_mean_sd(clean.KO, KOnum, perm = perm)
     Z_score <- sum(z$Z_score, na.rm = TRUE) / sqrt(KOnum)
+
+    # 考虑浮点数误差
+    if (isTRUE(all.equal(mean_sd$mean_sd[2], 0))) {
+      if (verbose) {
+        message("Warning: the standard deviation of the background distribution is zero, which may cause an error in calculating the reporter score.\nPlease check the input data, maybe all input KO are included in ", modulelist$id[i], "!")
+      }
+      if (attributes(ko_stat)$mode == "directed") {
+        return(c(exist_KO, significant_KO, sig_up, sig_down, NA, NA, NA, NA, NA))
+      } else {
+        return(c(exist_KO, significant_KO, NA, NA, NA, NA, NA))
+      }
+    }
 
     reporter_score <- (Z_score - mean_sd$mean_sd[1]) / mean_sd$mean_sd[2]
 
