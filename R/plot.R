@@ -27,14 +27,14 @@ export_report_table <- function(reporter_res, dir_name, overwrite = FALSE) {
     }
   }
   if (inherits(reporter_res, "reporter_score")) {
-    utils::write.csv(reporter_res$ko_stat, file = file.path(dir_name, "ko_stat.csv"), row.names = F)
-    utils::write.csv(reporter_res$reporter_s, file = file.path(dir_name, "reporter_s.csv"), row.names = F)
+    utils::write.csv(reporter_res$ko_stat, file = file.path(dir_name, "ko_stat.csv"), row.names = FALSE)
+    utils::write.csv(reporter_res$reporter_s, file = file.path(dir_name, "reporter_s.csv"), row.names = FALSE)
   }
   if (inherits(reporter_res, "rs_by_cm")) {
     ncluster <- sum(grepl("Cluster", names(reporter_res)))
     for (i in seq_len(ncluster)) {
-      utils::write.csv(reporter_res[[paste0("Cluster", i)]]$ko_stat, file = file.path(dir_name, paste0("ko_stat_Cluster_", i, ".csv")), row.names = F)
-      utils::write.csv(reporter_res[[paste0("Cluster", i)]]$reporter_s, file = file.path(dir_name, paste0("reporter_s_Cluster_", i, ".csv")), row.names = F)
+      utils::write.csv(reporter_res[[paste0("Cluster", i)]]$ko_stat, file = file.path(dir_name, paste0("ko_stat_Cluster_", i, ".csv")), row.names = FALSE)
+      utils::write.csv(reporter_res[[paste0("Cluster", i)]]$reporter_s, file = file.path(dir_name, paste0("reporter_s_Cluster_", i, ".csv")), row.names = FALSE)
     }
   }
 }
@@ -1181,6 +1181,8 @@ plot_features_network <- function(ko_stat, map_id = "map00780",
   ko_net <- MetaNet::c_net_set(ko_net, ko_stat, vertex_class = "Significantly")
   igraph::graph.attributes(ko_net)$n_type <- "ko_net"
   igraph::vertex.attributes(ko_net)[["color"]] <- pcutils::tidai(igraph::vertex.attributes(ko_net)[["v_class"]], kos_color)
+  igraph::edge.attributes(ko_net)[["color"]] <- rep("black", igraph::ecount(ko_net))
+
   tmp_v <- MetaNet::get_v(ko_net)
   if (!pathway_label) tmp_v$label <- ifelse(tmp_v$v_group == "Pathway", NA, tmp_v$label)
   if (pathway_description) {
@@ -1221,6 +1223,9 @@ plot_features_network <- function(ko_stat, map_id = "map00780",
       modules$color <- ifelse(modules$RS > 1.64, kos_color["Significant"], kos_color["None"])
     }
     modules_col <- setNames(modules$color, modules$module)
+    if (return_net) {
+      return(ko_net_m)
+    }
     plot(ko_net_m, ..., vertex.color = kos_color, mark_module = TRUE, mark_color = modules_col)
   } else {
     if (return_net) {

@@ -232,7 +232,7 @@ plot_enrich_res <- function(enrich_res, mode = 1, padj_threshold = 0.05,
   Description <- Significant_K_num <- order_value <- x <- fill <- size <- size_lab <- x_lab <- NULL
   GO <- pre_enrich_res(enrich_res, padj_threshold, show_ID, Pathway_description, facet_level, facet_anno)
 
-  GO$Description <- factor(GO$Description, levels = dplyr::arrange(GO, -order_value) %>% dplyr::pull(Description))
+  GO$Description <- factor(GO$Description, levels = dplyr::arrange(GO, -order_value) %>% dplyr::pull(Description) %>% unique())
   # 经典图
   if (mode == 1) {
     p <- ggplot(data = GO, aes(y = Description, x = x, fill = fill)) +
@@ -542,14 +542,6 @@ KO_gsa <- function(reporter_res, method = "Two class unpaired", p.adjust.method 
 #' @return enrich_res
 #' @export
 #' @family common_enrich
-#' @examples
-#' \donttest{
-#' ## use `gsva` from the `GSVA` package.
-#' if (requireNamespace("GSVA")) {
-#'   data("reporter_score_res")
-#'   gsva_res <- KO_gsva(reporter_score_res, p.adjust.method = "none")
-#' }
-#' }
 KO_gsva <- function(reporter_res, verbose = TRUE, method = "wilcox.test", p.adjust.method = "BH", ...) {
   kodf <- sampFile <- modulelist <- p.value <- NULL
   pre_rs(reporter_res, mode = 1, verbose = verbose)
@@ -623,17 +615,6 @@ KO_sea <- function(reporter_res, verbose = TRUE, ...) {
 #'
 #' @export
 #' @family common_enrich
-#' @examples
-#' \donttest{
-#' ## use `safe` from the `safe` package.
-#' if (requireNamespace("safe")) {
-#'   data("reporter_score_res")
-#'   safe_res <- KO_safe(reporter_score_res,
-#'     verbose = TRUE,
-#'     perm = 200, p.adjust.method = "none"
-#'   )
-#' }
-#' }
 KO_safe <- function(reporter_res, verbose = TRUE, perm = 1000,
                     C.matrix = NULL, p.adjust.method = "BH", ...) {
   kodf <- sampFile <- modulelist <- p.value <- NULL
@@ -668,17 +649,6 @@ KO_safe <- function(reporter_res, verbose = TRUE, perm = 1000,
 #'
 #' @export
 #' @family common_enrich
-#' @examples
-#' \donttest{
-#' ## use `PADOG` from the `PADOG` package.
-#' if (requireNamespace("PADOG")) {
-#'   data("reporter_score_res")
-#'   padog_res <- KO_padog(reporter_score_res,
-#'     verbose = TRUE,
-#'     perm = 200, p.adjust.method = "none"
-#'   )
-#' }
-#' }
 KO_padog <- function(reporter_res, verbose = TRUE, perm = 1000, p.adjust.method = "BH", ...) {
   kodf <- sampFile <- modulelist <- p.value <- NULL
   pre_rs(reporter_res, mode = 1, verbose = verbose)
